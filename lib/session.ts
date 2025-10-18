@@ -7,7 +7,7 @@ export function getUserSession(): UserSession {
     return {
       userId: 'anonymous',
       topicsGeneratedToday: 0,
-      lastGenerationDate: new Date().toISOString().split('T')[0],
+      lastGenerationDate: new Date().toISOString().split('T')[0] || '',
     };
   }
 
@@ -16,14 +16,14 @@ export function getUserSession(): UserSession {
     const newSession: UserSession = {
       userId: `user_${Date.now()}`,
       topicsGeneratedToday: 0,
-      lastGenerationDate: new Date().toISOString().split('T')[0],
+      lastGenerationDate: new Date().toISOString().split('T')[0] || '',
     };
     localStorage.setItem(SESSION_KEY, JSON.stringify(newSession));
     return newSession;
   }
 
   const session: UserSession = JSON.parse(stored);
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split('T')[0] || '';
 
   // Reset count if it's a new day
   if (session.lastGenerationDate !== today) {
