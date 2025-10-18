@@ -1,7 +1,7 @@
 import { cosmic, hasStatus } from '@/lib/cosmic'
 import { AppSettings, CosmicSingleResponse } from '@/types'
 import Link from 'next/link'
-import { Sparkles, Wand2 } from 'lucide-react'
+import { Sparkles, Wand2, History, CreditCard } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -52,6 +52,24 @@ export default async function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-violet-50 p-4">
       <div className="max-w-4xl mx-auto py-12">
+        {/* Header with Navigation */}
+        <div className="flex justify-end gap-4 mb-8">
+          <Link
+            href="/history"
+            className="btn-secondary"
+          >
+            <History className="w-4 h-4" />
+            History
+          </Link>
+          <Link
+            href="/pricing"
+            className="btn-secondary"
+          >
+            <CreditCard className="w-4 h-4" />
+            Pricing
+          </Link>
+        </div>
+
         {/* Header */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 mb-4">

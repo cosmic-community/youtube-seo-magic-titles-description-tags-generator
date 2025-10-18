@@ -28,11 +28,46 @@ export default function ResultsPage() {
       return
     }
 
-    setContent(JSON.parse(savedContent))
+    const parsed = JSON.parse(savedContent)
+    setContent(parsed.generated_data || parsed)
+    
     if (savedFormData) {
       setFormData(JSON.parse(savedFormData))
     }
-  }, [router])
+
+    // Save to history
+    if (formData) {
+      const historyItem = {
+        id: `gen_${Date.now()}`,
+        topic: formData.topic,
+        language: formData.language,
+        tone: formData.tone,
+        titleLength: formData.titleLength,
+        generated_data: parsed.generated_data || parsed,
+        timestamp: Date.now()
+      }
+      
+      const stored = localStorage.getItem('generation_history')
+      const history = stored ? JSON.parse(stored) : []
+      
+      // Check if this exact generation already exists (avoid duplicates)
+      const exists = history.some((item: any) => 
+        item.topic === historyItem.topic && 
+        Math.abs(item.timestamp - historyItem.timestamp) < 1000
+      )
+      
+      if (!exists) {
+        history.unshift(historyItem)
+        
+        // Keep only last 50 items
+        if (history.length > 50) {
+          history.splice(50)
+        }
+        
+        localStorage.setItem('generation_history', JSON.stringify(history))
+      }
+    }
+  }, [router, formData])
 
   const handleCopyJSON = () => {
     if (!content) return

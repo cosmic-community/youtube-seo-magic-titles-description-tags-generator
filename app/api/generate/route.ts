@@ -16,12 +16,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Get settings for free tier limit
-    const settingsResponse = await cosmic.objects.findOne({
-      type: 'app-settings',
-      slug: 'youtube-seo-magic-settings'
-    }).props(['metadata'])
+    let freeLimit = 5
+    try {
+      const settingsResponse = await cosmic.objects.findOne({
+        type: 'app-settings',
+        slug: 'youtube-seo-magic-settings'
+      }).props(['metadata'])
 
-    const freeLimit = settingsResponse.object.metadata.free_tier_limit || 5
+      freeLimit = settingsResponse.object.metadata.free_tier_limit || 5
+    } catch (error) {
+      console.error('Error fetching settings:', error)
+      // Continue with default limit
+    }
 
     // Check usage limits
     const session = getUserSession()
@@ -36,13 +42,22 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate SEO content using OpenAI
-    const generatedData = await generateSEOContent(
-      topic,
-      language,
-      tone,
-      titleLength,
-      keywords
-    )
+    let generatedData
+    try {
+      generatedData = await generateSEOContent(
+        topic,
+        language,
+        tone,
+        titleLength,
+        keywords
+      )
+    } catch (error) {
+      console.error('OpenAI generation error:', error)
+      return NextResponse.json(
+        { error: 'Failed to generate content. Please check your OpenAI API key configuration.' },
+        { status: 500 }
+      )
+    }
 
     // Map language/tone/titleLength to select-dropdown format
     const languageMap: Record<string, { key: string; value: string }> = {
@@ -65,20 +80,49 @@ export async function POST(request: NextRequest) {
       'Long ≤90': { key: 'long', value: 'Long ≤90' },
     }
 
-    // Save to Cosmic
-    await cosmic.objects.insertOne({
-      type: 'topics',
-      title: topic,
-      metadata: {
+    // Save to Cosmic CMS
+    try {
+      await cosmic.objects.insertOne({
+        type: 'topics',
+        title: topic,
+        metadata: {
+          topic,
+          language: languageMap[language],
+          tone: toneMap[tone],
+          title_length: titleLengthMap[titleLength],
+          target_keywords: keywords || '',
+          generated_data: generatedData,
+          user_id: session.userId,
+        }
+      })
+    } catch (error) {
+      console.error('Cosmic save error:', error)
+      // Continue even if save fails - user still gets the generated content
+    }
+
+    // Save to local history
+    if (typeof window !== 'undefined') {
+      const historyItem = {
+        id: `gen_${Date.now()}`,
         topic,
-        language: languageMap[language],
-        tone: toneMap[tone],
-        title_length: titleLengthMap[titleLength],
-        target_keywords: keywords || '',
+        language,
+        tone,
+        titleLength,
         generated_data: generatedData,
-        user_id: session.userId,
+        timestamp: Date.now()
       }
-    })
+      
+      const stored = localStorage.getItem('generation_history')
+      const history = stored ? JSON.parse(stored) : []
+      history.unshift(historyItem)
+      
+      // Keep only last 50 items
+      if (history.length > 50) {
+        history.splice(50)
+      }
+      
+      localStorage.setItem('generation_history', JSON.stringify(history))
+    }
 
     // Increment usage count
     incrementGenerationCount()
@@ -93,7 +137,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Generation error:', error)
     return NextResponse.json(
-      { error: 'Failed to generate content' },
+      { error: 'Failed to generate content. Please try again or contact support if the problem persists.' },
       { status: 500 }
     )
   }
