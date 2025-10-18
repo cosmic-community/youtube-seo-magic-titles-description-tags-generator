@@ -1,8 +1,12 @@
 import OpenAI from 'openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Initialize OpenAI client only if API key is available
+// This prevents build-time errors when env vars aren't set
+const openai = process.env.OPENAI_API_KEY 
+  ? new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    })
+  : null;
 
 export async function generateSEOContent(
   topic: string,
@@ -11,6 +15,10 @@ export async function generateSEOContent(
   titleLength: string,
   keywords?: string
 ): Promise<any> {
+  if (!openai) {
+    throw new Error('OpenAI API key is not configured');
+  }
+
   const languageMap: Record<string, string> = {
     'English': 'English',
     'Hindi': 'Hindi',
@@ -105,6 +113,10 @@ export async function regenerateTitles(
   tone: string,
   titleLength: string
 ): Promise<string[]> {
+  if (!openai) {
+    throw new Error('OpenAI API key is not configured');
+  }
+
   const languageMap: Record<string, string> = {
     'English': 'English',
     'Hindi': 'Hindi',
@@ -162,6 +174,10 @@ Return as JSON array:
 }
 
 export async function generateChapters(topic: string, language: string): Promise<any[]> {
+  if (!openai) {
+    throw new Error('OpenAI API key is not configured');
+  }
+
   const languageMap: Record<string, string> = {
     'English': 'English',
     'Hindi': 'Hindi',
@@ -214,6 +230,10 @@ Return as JSON array:
 }
 
 export async function generateIntroScript(topic: string, language: string, tone: string): Promise<string> {
+  if (!openai) {
+    throw new Error('OpenAI API key is not configured');
+  }
+
   const languageMap: Record<string, string> = {
     'English': 'English',
     'Hindi': 'Hindi',
