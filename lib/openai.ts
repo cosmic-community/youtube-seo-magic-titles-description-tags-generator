@@ -1,12 +1,16 @@
 import OpenAI from 'openai';
 
-// Initialize OpenAI client only if API key is available
-// This prevents build-time errors when env vars aren't set
-const openai = process.env.OPENAI_API_KEY 
-  ? new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    })
-  : null;
+// Lazy initialization function - only creates client when needed
+// This prevents build-time errors when env vars aren't available
+function getOpenAIClient(): OpenAI {
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error('OpenAI API key is not configured');
+  }
+  
+  return new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+}
 
 export async function generateSEOContent(
   topic: string,
@@ -15,9 +19,7 @@ export async function generateSEOContent(
   titleLength: string,
   keywords?: string
 ): Promise<any> {
-  if (!openai) {
-    throw new Error('OpenAI API key is not configured');
-  }
+  const openai = getOpenAIClient();
 
   const languageMap: Record<string, string> = {
     'English': 'English',
@@ -113,9 +115,7 @@ export async function regenerateTitles(
   tone: string,
   titleLength: string
 ): Promise<string[]> {
-  if (!openai) {
-    throw new Error('OpenAI API key is not configured');
-  }
+  const openai = getOpenAIClient();
 
   const languageMap: Record<string, string> = {
     'English': 'English',
@@ -174,9 +174,7 @@ Return as JSON array:
 }
 
 export async function generateChapters(topic: string, language: string): Promise<any[]> {
-  if (!openai) {
-    throw new Error('OpenAI API key is not configured');
-  }
+  const openai = getOpenAIClient();
 
   const languageMap: Record<string, string> = {
     'English': 'English',
@@ -230,9 +228,7 @@ Return as JSON array:
 }
 
 export async function generateIntroScript(topic: string, language: string, tone: string): Promise<string> {
-  if (!openai) {
-    throw new Error('OpenAI API key is not configured');
-  }
+  const openai = getOpenAIClient();
 
   const languageMap: Record<string, string> = {
     'English': 'English',
