@@ -59,6 +59,7 @@ export async function POST(request: NextRequest) {
     }
 
     const titleLengthMap: Record<string, { key: string; value: string }> = {
+      'Extra Short 20-50': { key: 'extra-short', value: 'Extra Short 20-50' },
       'Short ≤50': { key: 'short', value: 'Short ≤50' },
       'Medium 50–80': { key: 'medium', value: 'Medium 50–80' },
       'Long ≤90': { key: 'long', value: 'Long ≤90' },

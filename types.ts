@@ -110,4 +110,4 @@ export function isTopic(obj: CosmicObject): obj is Topic {
 // Utility types for form handling
 export type LanguageOption = 'English' | 'Hindi' | 'Hinglish';
 export type ToneOption = 'Casual' | 'Professional' | 'Funny' | 'Motivational';
-export type TitleLengthOption = 'Short ≤50' | 'Medium 50–80' | 'Long ≤90';
+export type TitleLengthOption = 'Extra Short 20-50' | 'Short ≤50' | 'Medium 50–80' | 'Long ≤90';

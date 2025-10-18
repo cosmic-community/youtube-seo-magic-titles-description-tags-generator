@@ -7,7 +7,7 @@ import Link from 'next/link'
 
 type LanguageOption = 'English' | 'Hindi' | 'Hinglish'
 type ToneOption = 'Casual' | 'Professional' | 'Funny' | 'Motivational'
-type TitleLengthOption = 'Short ≤50' | 'Medium 50–80' | 'Long ≤90'
+type TitleLengthOption = 'Extra Short 20-50' | 'Short ≤50' | 'Medium 50–80' | 'Long ≤90'
 
 export default function GeneratePage() {
   const router = useRouter()
@@ -170,9 +170,10 @@ export default function GeneratePage() {
               onChange={(e) => setTitleLength(e.target.value as TitleLengthOption)}
               className="select-field"
             >
-              <option value="Short ≤50">Short ≤50 characters</option>
-              <option value="Medium 50–80">Medium 50–80 characters</option>
-              <option value="Long ≤90">Long ≤90 characters</option>
+              <option value="Extra Short 20-50">Extra Short (20-50 characters)</option>
+              <option value="Short ≤50">Short (≤50 characters)</option>
+              <option value="Medium 50–80">Medium (50–80 characters)</option>
+              <option value="Long ≤90">Long (≤90 characters)</option>
             </select>
           </div>
 

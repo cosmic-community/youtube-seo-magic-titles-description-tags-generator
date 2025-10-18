@@ -28,6 +28,7 @@ export async function generateSEOContent(
   };
 
   const titleLengthMap: Record<string, string> = {
+    'Extra Short 20-50': 'between 20-50 characters',
     'Short ≤50': 'under 50 characters',
     'Medium 50–80': 'between 50-80 characters',
     'Long ≤90': 'between 80-90 characters',
@@ -124,6 +125,7 @@ export async function regenerateTitles(
   };
 
   const titleLengthMap: Record<string, string> = {
+    'Extra Short 20-50': 'between 20-50 characters',
     'Short ≤50': 'under 50 characters',
     'Medium 50–80': 'between 50-80 characters',
     'Long ≤90': 'between 80-90 characters',
